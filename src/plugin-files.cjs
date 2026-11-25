@@ -16,15 +16,24 @@ async function assertOpenable(filename){
 }
 class FileScope{
   constructor(protectedPaths=[]){this.roots=[];this.protectedPaths=protectedPaths.map(filename=>path.resolve(filename));}
-  checkProtected(filename){if(this.protectedPaths.some(root=>inside(root,filename)))throw Error('插件不能访问 OnTime 的内部配置、密钥或程序文件');}
-  async grant(filename,folder){const real=await fs.realpath(filename);this.checkProtected(real);const stat=await fs.stat(real);if(folder?!stat.isDirectory():!stat.isFile())throw Error('选择类型无效');this.roots.push({path:real,folder});return real;}
+  async checkProtected(filename) {
+    for (const protectedPath of this.protectedPaths) {
+      let canonical;
+      try { canonical = await fs.realpath(protectedPath); }
+      catch (error) { if (error.code !== 'ENOENT') throw error; }
+      if (inside(protectedPath, filename) || (canonical && inside(canonical, filename))) {
+        throw Error('插件不能访问 OnTime 的内部配置、密钥或程序文件');
+      }
+    }
+  }
+  async grant(filename,folder){const real=await fs.realpath(filename);await this.checkProtected(real);const stat=await fs.stat(real);if(folder?!stat.isDirectory():!stat.isFile())throw Error('选择类型无效');this.roots.push({path:real,folder});return real;}
   async resolve(filename,creating=false){
     if(typeof filename!=='string'||!path.isAbsolute(filename)||/^\\\\[?.]\\/.test(filename))throw Error('请选择有效的文件路径');
     const name=path.basename(filename);
     if(/[<>:"|?*\x00-\x1f]/.test(name)||/[. ]$/.test(name)||/^(con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\.|$)/i.test(name))throw Error('文件名无效');
     let real;
     try{real=await fs.realpath(filename);}catch(error){if(!creating||error.code!=='ENOENT')throw error;real=path.join(await fs.realpath(path.dirname(filename)),name);}
-    this.checkProtected(real);
+    await this.checkProtected(real);
     if(!this.roots.some(root=>root.folder?inside(root.path,real):path.relative(root.path,real)===''))throw Error('文件不在本次选择的授权范围内');
     return real;
   }

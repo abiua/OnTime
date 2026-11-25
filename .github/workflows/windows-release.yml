@@ -3,7 +3,7 @@ name: Windows release
 on:
   push:
     branches: [main]
-    paths: ['package.json']
+    paths: ['package.json', 'package-lock.json', 'src/**', 'scripts/**', 'tests/**', '.github/workflows/windows-release.yml']
   workflow_dispatch:
 
 permissions:
