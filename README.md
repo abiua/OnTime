@@ -2,9 +2,11 @@
 
 # OnTime
 
-按下 **Alt + Space**，输入应用名打开程序，或输入文件名查找本机文件。需要反复做的事可以保存成插件。比如输入「把多行文字去空行并去重」，让 OnTime 生成插件，试跑一次后放进插件栏，下次粘贴文字就能用。
+OnTime 是一个 Windows 桌面启动器。按 **Alt + Space** 唤出输入框，就能打开应用、搜索本机文件或翻译剪贴板里的文字。反复做的操作可以保存成插件。例如，让 OnTime 生成一个「去掉空行并删除重复行」的插件，用样例试跑，之后每次粘贴文字就能复用。
 
 **Windows x64 · 0.9.0 · AGPL-3.0-only**
+
+[下载 Windows x64 安装包](https://github.com/abiua/OnTime/releases/download/v0.9.0/OnTime-0.9.0-windows-x64.msi) · [查看版本与校验文件](https://github.com/abiua/OnTime/releases/tag/v0.9.0) · [从源码构建安装包](#从源码构建安装包)
 
 ## 安装
 
@@ -44,10 +46,10 @@ Get-FileHash .\OnTime-0.9.0-windows-x64.msi -Algorithm SHA256
 
 ## 从源码运行
 
-准备 **64 位 Windows、x64 Node.js 22.12.0 或更高版本、npm**。使用 Git 克隆仓库，或下载对应版本的源码 ZIP 后解压，在包含 `package.json` 的目录打开 PowerShell。
+准备 **64 位 Windows、x64 Node.js 22.12.0 或更高版本、npm**。在 PowerShell 中运行以下命令，检出与安装包对应的源码版本。如果已经从发布页下载并解压了 **Source code (zip)**，在包含 `package.json` 的目录直接从 `npm ci` 开始。
 
 ```powershell
-git clone https://github.com/abiua/OnTime.git
+git clone --branch v0.9.0 --depth 1 https://github.com/abiua/OnTime.git
 cd OnTime
 npm ci
 npm run runtime:install
@@ -58,7 +60,7 @@ npm start
 
 ## 从源码构建安装包
 
-在同一源码目录中运行以下命令。若要复现某个发布版本，请先检出对应标签或使用该版本附带的源码。
+完成上面的依赖安装后，从托盘退出正在调试的 OnTime，或在同一源码目录另开一个 PowerShell 窗口，再运行以下命令。只需要构建 MSI 时，可以跳过 `npm start`。
 
 ```powershell
 npm run check

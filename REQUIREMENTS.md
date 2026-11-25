@@ -9,6 +9,8 @@
 | 桌面运行时 | Electron 45.2.3 | 版本由 `package.json` 和 `package-lock.json` 锁定。 |
 | 构建时下载 | @electron/get 5.1.0 | 获取指定版本和架构的官方运行时压缩包。通过 `ONTIME_ELECTRON_ZIP` 提供本地压缩包可离线完成此步骤。 |
 | 桌面交互测试 | @playwright/test 1.58.2 | 项目直接驱动 Electron，无需另装 Playwright 浏览器。单元测试使用 Node.js 自带的测试运行器。 |
-| 构建 Windows 安装包 | 上述开发环境及 Windows 自带的 PowerShell、makecab、Windows Installer | 首次构建需要获取与锁定版本匹配的官方 Electron x64 压缩包，构建时会验证 SHA-256。 |
+| 构建 Windows 安装包 | 上述开发环境、Windows PowerShell、`tar.exe`、`makecab.exe`、Windows Installer | 构建脚本用 tar 解压 Electron，用 makecab 压缩待安装文件，再通过 Windows Installer 生成 MSI。 |
 
 首次安装开发依赖需要访问 npm 软件源，获取 Electron 运行时需要访问 GitHub Releases 或使用已有缓存。发布版只分发 OnTime 和 Electron。Everything、ES 及模型服务由每位用户自行配置。
+
+在源码根目录运行 `node -p "process.version + ' ' + process.arch"` 可检查 Node.js 版本和架构，构建 Windows 安装包时架构应显示 `x64`。运行 `npm ci` 后，用 `npm ls --depth=0` 可核对三个直接开发依赖的实际版本。完整的间接依赖及下载校验值见 [package-lock.json](package-lock.json)。
