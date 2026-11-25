@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: windows-release
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   release:
@@ -33,18 +33,22 @@ jobs:
       - run: npm test
       - run: npm run build:win
       - name: Install, launch, and uninstall
+        timeout-minutes: 5
         shell: pwsh
         run: |
           $msi = (Get-ChildItem dist/*.msi).FullName
-          $result = Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /qn /norestart" -Wait -PassThru
-          if ($result.ExitCode -ne 0) { throw "MSI install failed ($($result.ExitCode))" }
+          Write-Host 'Installing the per-user MSI'
+          $result = Start-Process msiexec.exe -ArgumentList "/i `"$msi`" /qn /norestart" -PassThru
+          if (!$result.WaitForExit(90000) -or $result.ExitCode -ne 0) { throw "MSI install failed or timed out ($($result.ExitCode))" }
           $env:ONTIME_INSTALLED_EXE = Join-Path $env:LOCALAPPDATA 'Programs/OnTime/OnTime.exe'
           try {
+            Write-Host 'Starting the installed OnTime.exe'
             node scripts/check-installed.cjs
             if ($LASTEXITCODE) { throw "Installed app failed startup check" }
           } finally {
-            $result = Start-Process msiexec.exe -ArgumentList "/x `"$msi`" /qn /norestart" -Wait -PassThru
-            if ($result.ExitCode -ne 0 -or (Test-Path $env:ONTIME_INSTALLED_EXE)) { throw "MSI uninstall failed" }
+            Write-Host 'Uninstalling the MSI'
+            $result = Start-Process msiexec.exe -ArgumentList "/x `"$msi`" /qn /norestart" -PassThru
+            if (!$result.WaitForExit(90000) -or $result.ExitCode -ne 0 -or (Test-Path $env:ONTIME_INSTALLED_EXE)) { throw "MSI uninstall failed or timed out" }
           }
       - name: Publish versioned installer
         shell: pwsh
