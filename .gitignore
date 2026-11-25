@@ -1,0 +1,23 @@
+node_modules/
+vendor/
+.test-profile/
+test-results/
+resources/*.exe
+resources/*.zip
+resources/es/
+resources/es-source/
+resources/everything/
+artifacts/
+
+tests/fixtures/rank/
+dist/
+.env
+.env.*
+*.log
+*.pem
+*.pfx
+*.key
+.npmrc
+settings.json
+Local State
+*.db

@@ -7,6 +7,7 @@
 | AI 翻译、生成插件、生成改名方案 | 支持 Responses、Chat Completions 或 Anthropic Messages 的模型服务 | 在应用内填写自己的服务地址、模型 ID 和 API Key。搜索应用、搜索文件和已安装的纯本地插件无需模型。 |
 | 从源码运行与测试 | Windows x64、Node.js 22.12.0 或更高版本、npm | 使用 `npm ci` 安装锁定的依赖，再运行 `npm run runtime:install` 下载 Electron。 |
 | 桌面运行时 | Electron 45.2.3 | 版本由 `package.json` 和 `package-lock.json` 锁定。 |
+| 构建时下载 | @electron/get 5.1.0 | 获取指定版本和架构的官方运行时压缩包。通过 `ONTIME_ELECTRON_ZIP` 提供本地压缩包可离线完成此步骤。 |
 | 桌面交互测试 | @playwright/test 1.58.2 | 项目直接驱动 Electron，无需另装 Playwright 浏览器。单元测试使用 Node.js 自带的测试运行器。 |
 | 构建 Windows 安装包 | 上述开发环境及 Windows 自带的 PowerShell、makecab、Windows Installer | 首次构建需要获取与锁定版本匹配的官方 Electron x64 压缩包，构建时会验证 SHA-256。 |
 

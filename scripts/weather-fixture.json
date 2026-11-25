@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "name": "近三天天气",
+  "description": "输入城市名，查询三天天气",
+  "keywords": [
+    "天气"
+  ],
+  "sample": "北京",
+  "steps": [
+    {
+      "op": "script",
+      "source": "async function run(input, api) {\n const places=JSON.parse(await api.get('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(input.trim())+'&count=1&language=zh'));\n const city=places.results?.[0]; if(!city)throw Error('没有找到城市');\n const data=JSON.parse(await api.get('https://api.open-meteo.com/v1/forecast?latitude='+city.latitude+'&longitude='+city.longitude+'&daily=temperature_2m_min,temperature_2m_max,precipitation_probability_max&timezone=auto&forecast_days=3'));\n return city.name+' · 三天天气（含今天）\\n'+data.daily.time.map((day,i)=>day+' '+data.daily.temperature_2m_min[i]+'–'+data.daily.temperature_2m_max[i]+' °C 降水概率 '+data.daily.precipitation_probability_max[i]+'%').join('\\n')+'\\nOpen-Meteo https://open-meteo.com/ · GeoNames';\n}",
+      "domains": [
+        "geocoding-api.open-meteo.com",
+        "api.open-meteo.com"
+      ]
+    }
+  ]
+}
